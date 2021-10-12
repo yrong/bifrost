@@ -37,7 +37,9 @@ bifrost-bancor = { path = "../../pallets/bancor" }
 bifrost-runtime = { path = "../../runtime/bifrost" }
 
 [features]
-default = ["std"]
+default = ["std","kusama"]
+kusama = []
+polkadot = []
 std = [
 	"codec/std",
 	"log/std",
@@ -50,7 +52,7 @@ std = [
 	"sp-arithmetic/std",
 	"orml-traits/std",
 	"xcm/std",
-	"xcm-support/std",
+	"xcm-support/default",
 	"polkadot-parachain/std",
 ]
 

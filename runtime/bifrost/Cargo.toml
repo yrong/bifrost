@@ -166,12 +166,14 @@ std = [
 	"bifrost-flexible-fee/std",
 	"bifrost-flexible-fee-rpc-runtime-api/std",
 	"bifrost-salp/std",
+	"bifrost-salp/kusama",
 	"bifrost-salp-rpc-runtime-api/std",
 	"bifrost-liquidity-mining/std",
 	"bifrost-liquidity-mining-rpc-runtime-api/std",
 	"bifrost-token-issuer/std",
 	"zenlink-protocol/std",
 	"zenlink-protocol-runtime-api/std",
+	"xcm-support/std"
 ]
 with-tracing = ["frame-executive/with-tracing"]
 

@@ -179,6 +179,7 @@ std = [
 	"bifrost-minter-reward/std",
 	"bifrost-runtime-common/std",
 	"bifrost-salp/std",
+	"bifrost-salp/kusama",
 	"bifrost-salp-rpc-runtime-api/std",
 	"bifrost-vsbond-auction/std",
 	"bifrost-vtoken-mint/std",

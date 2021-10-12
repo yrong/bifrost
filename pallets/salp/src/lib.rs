@@ -38,6 +38,9 @@ use node_primitives::{ContributionStatus, TokenInfo, TokenSymbol, TrieIndex};
 use orml_traits::MultiCurrency;
 pub use pallet::*;
 use sp_std::convert::TryFrom;
+#[cfg(feature = "kusama")]
+use xcm_support::kusama::RelaychainCall;
+use xcm_support::*;
 
 #[allow(type_alias_bounds)]
 pub type AccountIdOf<T> = <T as frame_system::Config>::AccountId;
@@ -105,7 +108,6 @@ pub mod pallet {
 	use sp_arithmetic::Percent;
 	use sp_std::prelude::*;
 	use xcm::latest::prelude::*;
-	use xcm_support::{kusama::RelaychainCall, *};
 
 	use super::*;
 
