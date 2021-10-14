@@ -82,7 +82,7 @@ use constants::{currency::*, time::*};
 use cumulus_primitives_core::ParaId as CumulusParaId;
 use frame_support::{
 	sp_runtime::traits::Convert,
-	traits::{EnsureOrigin, LockIdentifier, OnRuntimeUpgrade},
+	traits::{EnsureOrigin, LockIdentifier, Nothing, OnRuntimeUpgrade},
 };
 use frame_system::{EnsureOneOf, EnsureRoot, RawOrigin};
 use hex_literal::hex;
@@ -116,6 +116,7 @@ use zenlink_protocol::{
 	make_x2_location, AssetBalance, AssetId as ZenlinkAssetId, LocalAssetHandler,
 	MultiAssetsHandler, PairInfo, ZenlinkMultiAssets,
 };
+
 // Weights used in the runtime.
 mod weights;
 
@@ -678,11 +679,7 @@ match_type! {
 	};
 }
 
-pub type Barrier = (
-	TakeWeightCredit,
-	AllowTopLevelPaidExecutionFrom<Everything>,
-	BifrostXcmTransactFilter<Everything>,
-);
+pub type Barrier = (TakeWeightCredit, AllowTopLevelPaidExecutionFrom<Everything>);
 
 pub type BifrostAssetTransactor = MultiCurrencyAdapter<
 	Currencies,
@@ -794,7 +791,7 @@ impl pallet_xcm::Config for Runtime {
 	type LocationInverter = LocationInverter<Ancestry>;
 	type SendXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
 	type Weigher = FixedWeightBounds<UnitWeightCost, Call>;
-	type XcmExecuteFilter = Everything;
+	type XcmExecuteFilter = Nothing;
 	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type XcmReserveTransferFilter = Everything;
 	type XcmRouter = XcmRouter;
