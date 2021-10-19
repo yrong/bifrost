@@ -103,7 +103,9 @@ impl<
 			WithdrawAsset(asset.clone().into()),
 			BuyExecution {
 				fees: asset,
-				weight_limit: Some(weight + 1 * BaseXcmWeight::get() + nonce as u64).into(),
+				weight_limit: WeightLimit::Limited(
+					weight + 1 * BaseXcmWeight::get() + nonce as u64,
+				),
 			},
 			Instruction::Transact {
 				origin_type: OriginKind::SovereignAccount,
