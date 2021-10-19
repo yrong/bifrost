@@ -1002,9 +1002,11 @@ orml_traits::parameter_type_with_key! {
 			&CurrencyId::Token(TokenSymbol::KAR) => 10 * MILLICENTS,
 			&CurrencyId::Token(TokenSymbol::ZLK) => 1_000_000_000_000,	// ZLK has a decimals of 10e18
 			&CurrencyId::VSToken(TokenSymbol::KSM) => 10 * MILLICENTS,
+			&CurrencyId::VSToken(TokenSymbol::DOT) => 10 * MILLICENTS,
 			&CurrencyId::VSBond(TokenSymbol::ASG, ..) => 10 * MILLICENTS,
 			&CurrencyId::VSBond(TokenSymbol::KSM, ..) => 10 * MILLICENTS,
 			&CurrencyId::VSBond(TokenSymbol::BNC, ..) => 10 * MILLICENTS,
+			&CurrencyId::VSBond(TokenSymbol::DOT, ..) => 10 * MILLICENTS,
 			&CurrencyId::LPToken(..) => 10 * MILLICENTS,
 			_ => Balance::max_value() // unsupported
 		}
@@ -1777,7 +1779,7 @@ impl_runtime_apis! {
 	}
 
 	impl bifrost_liquidity_mining_rpc_runtime_api::LiquidityMiningRuntimeApi<Block, AccountId, PoolId> for Runtime {
-		fn get_rewards(who: AccountId, pid: PoolId) -> Vec<(CurrencyId, Balance)> {
+		fn get_rewards(who: AccountId, pid: PoolId, _pallet_instance: u32) -> Vec<(CurrencyId, Balance)> {
 			LiquidityMining::rewards(who, pid).unwrap_or(Vec::new())
 		}
 	}
