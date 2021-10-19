@@ -78,7 +78,7 @@ impl<
 	> BifrostXcmExecutor for BifrostXcmAdaptor<XcmSender, BaseXcmWeight, WeightToFee, SelfParaId>
 {
 	fn transact_weight(weight: u64, nonce: u32) -> u64 {
-		return weight + 4 * BaseXcmWeight::get() + nonce as u64;
+		return weight + 5 * BaseXcmWeight::get() + nonce as u64;
 	}
 
 	fn transact_id(data: &[u8]) -> MessageId {
@@ -103,13 +103,11 @@ impl<
 			WithdrawAsset(asset.clone().into()),
 			BuyExecution {
 				fees: asset,
-				weight_limit: WeightLimit::Limited(
-					weight + 1 * BaseXcmWeight::get() + nonce as u64,
-				),
+				weight_limit: WeightLimit::Limited(Self::transact_weight(weight, nonce)),
 			},
 			Instruction::Transact {
 				origin_type: OriginKind::SovereignAccount,
-				require_weight_at_most: 100_000_000_000,
+				require_weight_at_most: weight + 1 * BaseXcmWeight::get(),
 				call,
 			},
 			DepositAsset {
