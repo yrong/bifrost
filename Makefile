@@ -146,3 +146,7 @@ keystore:
 	./target/release/bifrost key insert --chain $(CHAIN) --keystore-path ./resources/keystore --suri "$(SURI)" --key-type aura
 	./target/release/bifrost key insert --chain $(CHAIN) --keystore-path ./resources/keystore --suri "$(SURI)" --key-type gran
 
+.PHONY: production-release
+production-release:
+	.maintain/publish-release.sh
+
