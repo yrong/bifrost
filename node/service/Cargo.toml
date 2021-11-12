@@ -108,6 +108,7 @@ with-bifrost-runtime = [
 	"bifrost-runtime",
 ]
 with-bifrost-polkadot-runtime = [
+	"bifrost-runtime",
 	"bifrost-polkadot-runtime",
 ]
 with-all-runtime = [

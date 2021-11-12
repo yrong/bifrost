@@ -35,6 +35,8 @@ use sc_consensus_aura::SlotProportion;
 pub mod chain_spec;
 #[cfg(feature = "with-asgard-runtime")]
 pub mod dev;
+#[cfg(feature = "with-bifrost-polkadot-runtime")]
+pub mod light;
 #[cfg(feature = "with-asgard-runtime")]
 pub use asgard_runtime;
 #[cfg(feature = "with-bifrost-polkadot-runtime")]
@@ -76,9 +78,9 @@ impl sc_executor::NativeExecutionDispatch for AsgardExecutor {
 	}
 }
 
-#[cfg(feature = "with-bifrost-runtime")]
+#[cfg(any(feature = "with-bifrost-runtime", feature = "with-bifrost-polkadot-runtime"))]
 pub struct BifrostExecutor;
-#[cfg(feature = "with-bifrost-runtime")]
+#[cfg(any(feature = "with-bifrost-runtime", feature = "with-bifrost-polkadot-runtime"))]
 impl sc_executor::NativeExecutionDispatch for BifrostExecutor {
 	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
 
@@ -88,21 +90,6 @@ impl sc_executor::NativeExecutionDispatch for BifrostExecutor {
 
 	fn native_version() -> sc_executor::NativeVersion {
 		bifrost_runtime::native_version()
-	}
-}
-
-#[cfg(feature = "with-bifrost-polkadot-runtime")]
-pub struct BifrostPolkadotExecutor;
-#[cfg(feature = "with-bifrost-polkadot-runtime")]
-impl sc_executor::NativeExecutionDispatch for BifrostPolkadotExecutor {
-	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
-
-	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-		bifrost_polkadot_runtime::api::dispatch(method, data)
-	}
-
-	fn native_version() -> sc_executor::NativeVersion {
-		bifrost_polkadot_runtime::native_version()
 	}
 }
 
@@ -345,9 +332,6 @@ where
 			warp_sync: None,
 		})?;
 
-	let is_bifrost = parachain_config.chain_spec.is_bifrost();
-	let is_asgard = parachain_config.chain_spec.is_asgard();
-
 	let rpc_extensions_builder = {
 		let client = client.clone();
 		let transaction_pool = transaction_pool.clone();
@@ -358,13 +342,7 @@ where
 				pool: transaction_pool.clone(),
 				deny_unsafe,
 			};
-			let rpc = if is_bifrost {
-				crate::rpc::create_bifrost_rpc(deps)
-			} else if is_asgard {
-				crate::rpc::create_asgard_rpc(deps)
-			} else {
-				crate::rpc::create_bifrost_polkadot_rpc(deps)
-			};
+			let rpc = crate::rpc::create_full_rpc(deps);
 			Ok(rpc)
 		})
 	};
@@ -563,17 +541,6 @@ pub fn new_chain_ops(
 		}
 		#[cfg(not(feature = "with-bifrost-runtime"))]
 		Err(BIFROST_RUNTIME_NOT_AVAILABLE.into())
-	} else if config.chain_spec.is_bifrost_polkadot() {
-		#[cfg(feature = "with-bifrost-polkadot-runtime")]
-		{
-			let PartialComponents { client, backend, import_queue, task_manager, .. } =
-				new_partial::<bifrost_polkadot_runtime::RuntimeApi, BifrostPolkadotExecutor>(
-					config, false,
-				)?;
-			Ok((Arc::new(Client::BifrostPolkadot(client)), backend, import_queue, task_manager))
-		}
-		#[cfg(not(feature = "with-bifrost-polkadot-runtime"))]
-		Err(BIFROST_POLKADOT_RUNTIME_NOT_AVAILABLE.into())
 	} else {
 		Err(UNKNOWN_RUNTIME.into())
 	}
