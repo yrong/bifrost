@@ -23,7 +23,9 @@ members = [
 	"runtime/asgard",
 	"runtime/bifrost",
 	"xcm-support",
-	"ethereum-bridge",
+	"ethereum-bridge/primitives",
+	"ethereum-bridge/basic-channel",
+	"ethereum-bridge/dispatch",
 ]
 
 resolver = "2"

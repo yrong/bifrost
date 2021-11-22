@@ -186,7 +186,7 @@ dependencies = [
  "cumulus-primitives-core",
  "cumulus-primitives-timestamp",
  "cumulus-primitives-utility",
- "ethereum-bridge",
+ "ethereum-bridge-primitives",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -237,6 +237,8 @@ dependencies = [
  "scale-info",
  "serde",
  "smallvec",
+ "snowbridge-basic-channel",
+ "snowbridge-dispatch",
  "sp-api",
  "sp-arithmetic",
  "sp-block-builder",
@@ -869,7 +871,7 @@ dependencies = [
  "cumulus-primitives-core",
  "cumulus-primitives-timestamp",
  "cumulus-primitives-utility",
- "ethereum-bridge",
+ "ethereum-bridge-primitives",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -917,6 +919,8 @@ dependencies = [
  "polkadot-primitives",
  "scale-info",
  "smallvec",
+ "snowbridge-basic-channel",
+ "snowbridge-dispatch",
  "sp-api",
  "sp-arithmetic",
  "sp-block-builder",
@@ -2607,7 +2611,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ethereum-bridge"
+name = "ethereum-bridge-primitives"
 version = "0.1.0"
 dependencies = [
  "enum-iterator",
@@ -2625,6 +2629,7 @@ dependencies = [
  "rand 0.7.3",
  "rlp",
  "rustc-hex",
+ "scale-info",
  "serde",
  "serde-big-array",
  "serde_derive",
@@ -9790,6 +9795,46 @@ dependencies = [
  "sha2 0.9.8",
  "subtle",
  "x25519-dalek",
+]
+
+[[package]]
+name = "snowbridge-basic-channel"
+version = "0.1.1"
+dependencies = [
+ "ethabi-decode",
+ "ethereum-bridge-primitives",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex-literal 0.3.3",
+ "parity-scale-codec",
+ "rlp",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "snowbridge-dispatch"
+version = "0.1.1"
+dependencies = [
+ "ethereum-bridge-primitives",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex-literal 0.3.3",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-std",
 ]
 
 [[package]]

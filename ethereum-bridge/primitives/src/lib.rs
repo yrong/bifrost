@@ -22,6 +22,8 @@ pub use nft::{ERC721TokenData, TokenInfo};
 pub use receipt::Receipt;
 pub use types::{ChannelId, Message, MessageId, MessageNonce, Proof};
 
+pub use crate::core::{MessageDispatch, Verifier};
+
 #[derive(Debug)]
 pub enum DecodeError {
 	// Unexpected RLP data

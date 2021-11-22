@@ -17,7 +17,7 @@ smallvec = "1.6.1"
 
 # primitives
 node-primitives = { default-features = false, path = "../../node/primitives" }
-ethereum-bridge = { default-features = false, path = "../../ethereum-bridge" }
+ethereum-bridge-primitives = { default-features = false, path = "../../ethereum-bridge/primitives" }
 sp-block-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12", default-features = false}
 sp-inherents = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12", default-features = false }
 sp-offchain = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12", default-features = false }
@@ -117,6 +117,10 @@ orml-benchmarking = { version = "0.4.1-dev", default-features = false, optional 
 zenlink-protocol = { version = "*", default-features = false }
 zenlink-protocol-runtime-api = { version = "*", default-features = false }
 
+snowbridge-basic-channel = { default-features = false, path = "../../ethereum-bridge/basic-channel" }
+snowbridge-dispatch = { default-features = false, path = "../../ethereum-bridge/dispatch" }
+
+
 [build-dependencies]
 substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.12" }
 
@@ -199,7 +203,7 @@ std = [
 	"bifrost-lightening-redeem/std",
 	"bifrost-call-switchgear/std",
 	"xcm-support/std",
-	"ethereum-bridge/std",
+	"ethereum-bridge-primitives/std",
 	"orml-currencies/std",
 	"orml-traits/std",
 	"orml-tokens/std",
@@ -210,6 +214,8 @@ std = [
 	"orml-benchmarking/std",
 	"zenlink-protocol/std",
 	"zenlink-protocol-runtime-api/std",
+	"snowbridge-basic-channel/std",
+	"snowbridge-dispatch/std",
 ]
 
 runtime-benchmarks = [

@@ -1,5 +1,6 @@
 use codec::{Decode, Encode};
 use ethereum_types::{H128, H256, H512, H64};
+use scale_info::TypeInfo;
 use sp_io::hashing::{keccak_256, keccak_512, sha2_256};
 use sp_runtime::RuntimeDebug;
 use sp_std::{cell::RefCell, collections::btree_map::BTreeMap, prelude::*};
@@ -16,7 +17,7 @@ const HASH_BYTES: usize = 64;
 /// Numver of accesses in hashimoto loop
 const ACCESSES: usize = 64;
 
-#[derive(Default, Clone, Encode, Decode, PartialEq, RuntimeDebug)]
+#[derive(Default, Clone, Encode, Decode, PartialEq, RuntimeDebug, TypeInfo)]
 pub struct DoubleNodeWithMerkleProof {
 	pub dag_nodes: [H512; 2],
 	pub proof: Vec<H128>,
