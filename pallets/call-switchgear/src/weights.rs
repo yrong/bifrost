@@ -16,14 +16,38 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-use substrate_wasm_builder::WasmBuilder;
+#![allow(unused_parens)]
+#![allow(unused_imports)]
 
-fn main() {
-	WasmBuilder::new()
-		.with_current_project()
-		.export_heap_base()
-		.import_memory()
-		.append_to_rust_flags("-C opt-level=z") // shrink the size of wasm binary
-		.append_to_rust_flags("-C linker-plugin-lto")
-		.build()
+use frame_support::{
+	traits::Get,
+	weights::{constants::RocksDbWeight, Weight},
+};
+use sp_std::marker::PhantomData;
+
+/// Weight functions needed for the pallet.
+pub trait WeightInfo {
+	fn switchoff_transaction() -> Weight;
+	fn switchon_transaction() -> Weight;
+	fn disable_transfers() -> Weight;
+	fn enable_transfers() -> Weight;
+}
+
+// For backwards compatibility and tests
+impl WeightInfo for () {
+	fn switchoff_transaction() -> Weight {
+		(50_000_000 as Weight)
+	}
+
+	fn switchon_transaction() -> Weight {
+		(50_000_000 as Weight)
+	}
+
+	fn disable_transfers() -> Weight {
+		(50_000_000 as Weight)
+	}
+
+	fn enable_transfers() -> Weight {
+		(50_000_000 as Weight)
+	}
 }
