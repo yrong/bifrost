@@ -1,8 +1,5 @@
 name: Release
 on:
-  release:
-    types:
-      - published
   workflow_dispatch:
     inputs:
       tag:
@@ -12,7 +9,7 @@ on:
 jobs:
   build-release:
     name: Build binary
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Set tag from input
         run: |
@@ -26,6 +23,15 @@ jobs:
 
       - name: Check to latest commit
         uses: actions/checkout@v2
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: nightly-2021-11-07
+          components: rustfmt
+          target: wasm32-unknown-unknown
+          default: true
 
       - name: Build bifrost
         run: |

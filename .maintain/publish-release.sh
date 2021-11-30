@@ -2,7 +2,7 @@
 
 set -xe
 
-RUSTC_VERSION="1.53.0"
+RUSTC_VERSION="1.56.1"
 EXTRA_ARGS='--json'
 RUNTIME=bifrost
 BIN_PATH=$(dirname $(readlink -f $0))
@@ -25,6 +25,6 @@ docker run --rm -it \
   -v ${WORK_PATH}:/build \
   paritytech/srtool:${RUSTC_VERSION} build ${EXTRA_ARGS}
 
-cp ${WORK_PATH}/runtime/$RUNTIME/target/srtool/release/wbuild/$RUNTIME-runtime/${RUNTIME}_runtime.compact.wasm \
+cp ${WORK_PATH}/runtime/$RUNTIME/target/srtool/release/wbuild/$RUNTIME-runtime/${RUNTIME}_runtime.compact.compressed.wasm \
 ${WORK_PATH}/resources
-tar cjSf ${WORK_PATH}/resources/bifrost-wasm.tar.bz2 ${WORK_PATH}/resources/${RUNTIME}_runtime.compact.wasm
+tar cjSf ${WORK_PATH}/resources/bifrost-wasm.tar.bz2 ${WORK_PATH}/resources/${RUNTIME}_runtime.compact.compressed.wasm
