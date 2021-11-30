@@ -42,7 +42,6 @@ jobs:
         with:
           name: bifrost-artifact-${{ github.sha }}
           path: |
-            ./resources/bifrost-wasm.tar.bz2
             ./resources/bifrost-x86_64-linux-gnu.tar.bz2
 
       - uses: 8398a7/action-slack@v3
