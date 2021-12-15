@@ -1321,6 +1321,7 @@ impl bifrost_salp::Config for Runtime {
 	type TransactProxyType = SalpProxyType;
 	type TransactType = SalpTransactType;
 	type RelayNetwork = RelayNetwork;
+	type ConfirmAsMultiSig = ConfirmMuitiSigAccount;
 }
 
 parameter_types! {
@@ -1366,6 +1367,7 @@ impl bifrost_salp_lite::Config for Runtime {
 	type WeightInfo = ();
 	type EnsureConfirmAsMultiSig =
 		EnsureOneOf<AccountId, MoreThanHalfCouncil, EnsureSalpLiteConfirmAsMultiSig>;
+	type ConfirmAsMultiSig = PolkaConfirmAsMultiSig;
 	type EnsureConfirmAsGovernance =
 		EnsureOneOf<AccountId, MoreThanHalfCouncil, EnsureRootOrAllTechnicalCommittee>;
 }
