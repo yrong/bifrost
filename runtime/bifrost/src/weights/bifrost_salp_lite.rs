@@ -77,4 +77,19 @@ impl<T: frame_system::Config> bifrost_salp_lite::WeightInfo for WeightInfo<T> {
 			.saturating_add(T::DbWeight::get().reads(11 as Weight))
 			.saturating_add(T::DbWeight::get().writes(8 as Weight))
 	}
+
+	// Storage: SalpLite Funds (r:1 w:0)
+	// Storage: SalpLite RedeemPool (r:1 w:1)
+	// Storage: Tokens Accounts (r:2 w:2)
+	// Storage: Tokens TotalIssuance (r:2 w:2)
+	// Storage: System Number (r:1 w:0)
+	// Storage: System ExecutionPhase (r:1 w:0)
+	// Storage: System EventCount (r:1 w:1)
+	// Storage: System Events (r:1 w:1)
+	// Storage: unknown [0xd861ea1ebf4800d4b89f4ff787ad79ee96d9a708c85b57da7eb8f9ddeda61291] (r:1 w:1)
+	fn re_issue() -> Weight {
+		(137_729_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(11 as Weight))
+			.saturating_add(T::DbWeight::get().writes(8 as Weight))
+	}
 }

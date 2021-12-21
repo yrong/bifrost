@@ -176,6 +176,7 @@ pub mod pallet {
 		Retired(ParaId),
 		Continued(ParaId, LeasePeriod, LeasePeriod),
 		RefundedDissolved(ParaId, LeasePeriod, LeasePeriod),
+		ReIssued(AccountIdOf<T>, ParaId, LeasePeriod, LeasePeriod, BalanceOf<T>),
 	}
 
 	#[pallet::error]
@@ -689,6 +690,46 @@ pub mod pallet {
 
 			Ok(())
 		}
+
+		/// ReIssue will migrate the failed old vsbond to the new one
+		#[pallet::weight(T::WeightInfo::refund())]
+		#[transactional]
+		pub fn re_issue(
+			origin: OriginFor<T>,
+			#[pallet::compact] index: ParaId,
+			#[pallet::compact] first_slot: LeasePeriod,
+			#[pallet::compact] last_slot: LeasePeriod,
+			#[pallet::compact] value: BalanceOf<T>,
+		) -> DispatchResult {
+			let who = ensure_signed(origin.clone())?;
+			ensure!(value >= T::MinContribution::get(), Error::<T>::ContributionTooSmall);
+			let fund = Self::funds(index).ok_or(Error::<T>::InvalidParaId)?;
+			ensure!(fund.status == FundStatus::Ongoing, Error::<T>::InvalidFundStatus);
+
+			let mut failed_fund = Self::failed_funds_to_refund((index, first_slot, last_slot))
+				.ok_or(Error::<T>::InvalidFundNotExist)?;
+			ensure!(
+				failed_fund.status == FundStatus::FailedToContinue,
+				Error::<T>::InvalidFundStatus
+			);
+			ensure!(failed_fund.raised >= value, Error::<T>::NotEnoughBalanceInFund);
+
+			let (_, old_vs_bond) =
+				Self::vsAssets(index, failed_fund.first_slot, failed_fund.last_slot);
+			let (_, new_vs_bond) = Self::vsAssets(index, fund.first_slot, fund.last_slot);
+			T::MultiCurrency::ensure_can_withdraw(old_vs_bond, &who, value)
+				.map_err(|_e| Error::<T>::NotEnoughFreeAssetsToRedeem)?;
+
+			T::MultiCurrency::withdraw(old_vs_bond, &who, value)?;
+			T::MultiCurrency::deposit(new_vs_bond, &who, value)?;
+
+			failed_fund.raised = failed_fund.raised.saturating_sub(value);
+			FailedFundsToRefund::<T>::insert((index, first_slot, last_slot), Some(failed_fund));
+
+			Self::deposit_event(Event::ReIssued(who, index, first_slot, last_slot, value));
+
+			Ok(())
+		}
 	}
 
 	#[pallet::hooks]
@@ -826,6 +867,7 @@ pub mod pallet {
 pub trait WeightInfo {
 	fn refund() -> Weight;
 	fn redeem() -> Weight;
+	fn re_issue() -> Weight;
 }
 
 // For backwards compatibility and tests
@@ -835,6 +877,10 @@ impl WeightInfo for () {
 	}
 
 	fn redeem() -> Weight {
+		50_000_000 as Weight
+	}
+
+	fn re_issue() -> Weight {
 		50_000_000 as Weight
 	}
 }

@@ -866,3 +866,23 @@ fn refund_meanwhile_issue_should_work() {
 		assert_noop!(Salp::redeem(Some(BRUCE).into(), 3_000, 50), Error::<Test>::InvalidParaId);
 	});
 }
+
+#[test]
+fn re_issue_should_work() {
+	new_test_ext().execute_with(|| {
+		assert_ok!(Salp::create(Some(ALICE).into(), 3_000, 1_000, 1, SlotLength::get()));
+		assert_ok!(Salp::issue(Some(ALICE).into(), BRUCE, 3_000, 100, CONTRIBUTON_INDEX));
+		assert_ok!(Salp::fund_fail(Some(ALICE).into(), 3_000));
+		assert_ok!(Salp::withdraw(Some(ALICE).into(), 3_000));
+		let (_, vs_bond_old) = Salp::vsAssets(3_000, 1, SlotLength::get());
+		assert_eq!(Tokens::accounts(BRUCE, vs_bond_old).free, 100);
+		assert_ok!(Salp::continue_fund(Some(ALICE).into(), 3_000, 2, SlotLength::get() + 1));
+		assert_ok!(Salp::refund(Some(BRUCE).into(), 3_000, 1, SlotLength::get(), 50));
+		assert_eq!(Tokens::accounts(BRUCE, vs_bond_old).free, 50);
+		assert_ok!(Salp::re_issue(Some(BRUCE).into(), 3_000, 1, SlotLength::get(), 50));
+		let (_, vs_bond_new) = Salp::vsAssets(3_000, 2, SlotLength::get() + 1);
+		assert_eq!(Tokens::accounts(BRUCE, vs_bond_new).free, 50);
+		let new_fund = Salp::funds(3_000).unwrap();
+		assert_eq!(new_fund.raised, 50);
+	});
+}

@@ -254,6 +254,10 @@ impl WeightInfo for SalpWeightInfo {
 	fn refund() -> Weight {
 		0
 	}
+
+	fn re_issue() -> Weight {
+		0
+	}
 }
 
 pub(crate) fn new_test_ext() -> sp_io::TestExternalities {
