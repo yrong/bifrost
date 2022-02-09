@@ -1387,11 +1387,13 @@ parameter_types! {
 	pub RelaychainSovereignSubAccount: MultiLocation = create_x2_multilocation(ParachainDerivedProxyAccountType::Salp as u16);
 	pub SalpTransactType: ParachainTransactType = ParachainTransactType::Xcm;
 	pub SalpProxyType: ParachainTransactProxyType = ParachainTransactProxyType::Derived;
+	pub XcmTransactFee: Balance = dollar(RelayCurrencyId::get()) / 10;
 }
 
 impl bifrost_salp::Config for Runtime {
 	type BancorPool = Bancor;
-	type BifrostXcmExecutor = BifrostXcmAdaptor<XcmRouter, XcmWeight, KsmWeightToFee, SelfParaId>;
+	type BifrostXcmExecutor =
+		BifrostXcmAdaptor<XcmRouter, XcmWeight, KsmWeightToFee, SelfParaId, XcmTransactFee>;
 	type Event = Event;
 	type LeasePeriod = LeasePeriod;
 	type MinContribution = MinContribution;
