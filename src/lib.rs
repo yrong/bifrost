@@ -2292,13 +2292,17 @@ pub mod pallet {
 				} else {
 					let pool_account: <T as frame_system::Config>::AccountId =
 						T::PalletId::get().into_account();
-					if let Ok(()) = T::Currency::transfer(
+					let result = T::Currency::transfer(
 						&pool_account,
 						&to,
-						amt,
-						ExistenceRequirement::AllowDeath,
-					) {
-						Self::deposit_event(Event::Rewarded(to.clone(), amt.clone()));
+						amt.clone(),
+						ExistenceRequirement::KeepAlive,
+					);
+					match result {
+						Ok(_) => Self::deposit_event(Event::Rewarded(to.clone(), amt.clone())),
+						Err(e) => {
+							log::error!("reward from pool account fail as {:?}", e);
+						},
 					}
 				}
 			};
