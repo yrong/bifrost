@@ -45,7 +45,7 @@ use sp_runtime::{traits::AccountIdConversion, Perbill};
 pub struct InitGenesisMigration<T>(PhantomData<T>);
 impl<T: Config> OnRuntimeUpgrade for InitGenesisMigration<T> {
 	fn on_runtime_upgrade() -> Weight {
-		log::info!(target: "InitMigration", "init genesis data");
+		log::info!(target: "Staking", "init migraion");
 		fn to_round_inflation(annual: Range<Perbill>) -> Range<Perbill> {
 			perbill_annual_to_perbill_round(
 				annual,
@@ -68,7 +68,7 @@ impl<T: Config> OnRuntimeUpgrade for InitGenesisMigration<T> {
 			round: to_round_inflation(annual),
 		};
 		<InflationConfig<T>>::put(inflation_info);
-		let endowment: BalanceOf<T> = BalanceOf::<T>::from(T::MinCollatorStk::get());
+		let endowment: BalanceOf<T> = BalanceOf::<T>::from(T::InitSeedStk::get());
 
 		let mut candidate_count = 0u32;
 
@@ -109,6 +109,7 @@ impl<T: Config> OnRuntimeUpgrade for InitGenesisMigration<T> {
 
 	#[cfg(feature = "try-runtime")]
 	fn pre_upgrade() -> Result<(), &'static str> {
+		log::info!(target: "Staking", "pre-init migraion");
 		let candidates = <CandidatePool<T>>::get();
 		let old_count = candidates.0.len() as u32;
 		assert_eq!(old_count, 0);
@@ -117,9 +118,10 @@ impl<T: Config> OnRuntimeUpgrade for InitGenesisMigration<T> {
 
 	#[cfg(feature = "try-runtime")]
 	fn post_upgrade() -> Result<(), &'static str> {
+		log::info!(target: "Staking", "post-init migraion");
 		let candidates = <CandidatePool<T>>::get();
-		let new_count = candidates.0.len() as u32;
-		assert_eq!(new_count, 4);
+		let new_count = candidates.0.len();
+		assert_eq!(new_count, T::ToMigrateInvulnables::get().len());
 		Ok(())
 	}
 }
