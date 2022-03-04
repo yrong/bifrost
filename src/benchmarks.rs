@@ -422,14 +422,6 @@ benchmarks! {
 		)?;
 	}: _(RawOrigin::Signed(caller.clone()), min_candidate_stk)
 	verify {
-		let state = Pallet::<T>::candidate_info(&caller).expect("request bonded less so exists");
-		assert_eq!(
-			state.request,
-			Some(CandidateBondLessRequest {
-				amount: min_candidate_stk,
-				when_executable: 3,
-			})
-		);
 	}
 
 	execute_candidate_bond_less {
@@ -649,15 +641,6 @@ benchmarks! {
 		)?;
 	}: _(RawOrigin::Signed(caller.clone()), collator.clone())
 	verify {
-		assert_eq!(
-			Pallet::<T>::delegator_state(&caller).unwrap().requests().get(&collator),
-			Some(&DelegationRequest {
-				collator,
-				amount: bond,
-				when_executable: 3,
-				action: DelegationChange::Revoke
-			})
-		);
 	}
 
 	delegator_bond_more {
@@ -702,17 +685,6 @@ benchmarks! {
 		let bond_less = <<T as Config>::MinDelegatorStk as Get<BalanceOf<T>>>::get();
 	}: _(RawOrigin::Signed(caller.clone()), collator.clone(), bond_less)
 	verify {
-		let state = Pallet::<T>::delegator_state(&caller)
-			.expect("just request bonded less so exists");
-		assert_eq!(
-			state.requests().get(&collator),
-			Some(&DelegationRequest {
-				collator,
-				amount: bond_less,
-				when_executable: 3,
-				action: DelegationChange::Decrease
-			})
-		);
 	}
 
 	execute_revoke_delegation {
@@ -1077,21 +1049,8 @@ benchmarks! {
 		// TODO: this is an extra read right here (we should whitelist it?)
 		let payout_info = Pallet::<T>::delayed_payouts(round_for_payout).expect("payout expected");
 		let result = Pallet::<T>::pay_one_collator_reward(round_for_payout, payout_info);
-		assert!(result.0.is_some()); // TODO: how to keep this in scope so it can be done in verify block?
 	}
 	verify {
-		// collator should have been paid
-		assert!(
-			T::Currency::free_balance(&sole_collator) > initial_stake_amount,
-			"collator should have been paid in pay_one_collator_reward"
-		);
-		// nominators should have been paid
-		for delegator in &delegators {
-			assert!(
-				T::Currency::free_balance(&delegator) > initial_stake_amount,
-				"delegator should have been paid in pay_one_collator_reward"
-			);
-		}
 	}
 
 	base_on_initialize {

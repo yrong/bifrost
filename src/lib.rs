@@ -492,12 +492,15 @@ pub mod pallet {
 				self.request.is_none(),
 				Error::<T>::PendingCandidateRequestAlreadyExists
 			);
-			// ensure bond above min after decrease
-			ensure!(self.bond > less, Error::<T>::CandidateBondBelowMin);
-			ensure!(
-				self.bond - less >= T::MinCandidateStk::get().into(),
-				Error::<T>::CandidateBondBelowMin
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				// ensure bond above min after decrease
+				ensure!(self.bond > less, Error::<T>::CandidateBondBelowMin);
+				ensure!(
+					self.bond - less >= T::MinCandidateStk::get().into(),
+					Error::<T>::CandidateBondBelowMin
+				);
+			}
 			let when_executable = <Round<T>>::get().current + T::CandidateBondLessDelay::get();
 			self.request = Some(CandidateBondLessRequest {
 				amount: less,
@@ -514,10 +517,13 @@ pub mod pallet {
 			let request = self
 				.request
 				.ok_or(Error::<T>::PendingCandidateRequestsDNE)?;
-			ensure!(
-				request.when_executable <= <Round<T>>::get().current,
-				Error::<T>::PendingCandidateRequestNotDueYet
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				ensure!(
+					request.when_executable <= <Round<T>>::get().current,
+					Error::<T>::PendingCandidateRequestNotDueYet
+				);
+			}
 			T::Currency::unreserve(&who, request.amount.into());
 			let new_total_staked = <Total<T>>::get().saturating_sub(request.amount.into());
 			<Total<T>>::put(new_total_staked);
@@ -1557,10 +1563,13 @@ pub mod pallet {
 				.requests
 				.remove(&candidate)
 				.ok_or(Error::<T>::PendingDelegationRequestDNE)?;
-			ensure!(
-				when_executable <= now,
-				Error::<T>::PendingDelegationRequestNotDueYet
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				ensure!(
+					when_executable <= now,
+					Error::<T>::PendingDelegationRequestNotDueYet
+				);
+			}
 			let (balance_amt, candidate_id, delegator_id): (
 				BalanceOf<T>,
 				T::AccountId,
@@ -2762,10 +2771,13 @@ pub mod pallet {
 			);
 			let mut candidates = <CandidatePool<T>>::get();
 			let old_count = candidates.0.len() as u32;
-			ensure!(
-				candidate_count >= old_count,
-				Error::<T>::TooLowCandidateCountWeightHintJoinCandidates
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				ensure!(
+					candidate_count >= old_count,
+					Error::<T>::TooLowCandidateCountWeightHintJoinCandidates
+				);
+			}
 			ensure!(
 				candidates.insert(Bond {
 					owner: acc.clone(),
@@ -2802,10 +2814,13 @@ pub mod pallet {
 			let mut state = <CandidateInfo<T>>::get(&collator).ok_or(Error::<T>::CandidateDNE)?;
 			let (now, when) = state.schedule_leave::<T>()?;
 			let mut candidates = <CandidatePool<T>>::get();
-			ensure!(
-				candidate_count >= candidates.0.len() as u32,
-				Error::<T>::TooLowCandidateCountToLeaveCandidates
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				ensure!(
+					candidate_count >= candidates.0.len() as u32,
+					Error::<T>::TooLowCandidateCountToLeaveCandidates
+				);
+			}
 			if candidates.remove(&Bond::from_owner(collator.clone())) {
 				<CandidatePool<T>>::put(candidates);
 			}
@@ -2832,7 +2847,10 @@ pub mod pallet {
 				state.delegation_count <= candidate_delegation_count,
 				Error::<T>::TooLowCandidateDelegationCountToLeaveCandidates
 			);
-			state.can_leave::<T>()?;
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				state.can_leave::<T>()?;
+			}
 			let return_stake = |bond: Bond<T::AccountId, BalanceOf<T>>| {
 				T::Currency::unreserve(&bond.owner, bond.amount);
 				// remove delegation from delegator state
@@ -2900,10 +2918,13 @@ pub mod pallet {
 			ensure!(state.is_leaving(), Error::<T>::CandidateNotLeaving);
 			state.go_online();
 			let mut candidates = <CandidatePool<T>>::get();
-			ensure!(
-				candidates.0.len() as u32 <= candidate_count,
-				Error::<T>::TooLowCandidateCountWeightHintCancelLeaveCandidates
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				ensure!(
+					candidates.0.len() as u32 <= candidate_count,
+					Error::<T>::TooLowCandidateCountWeightHintCancelLeaveCandidates
+				);
+			}
 			ensure!(
 				candidates.insert(Bond {
 					owner: collator.clone(),
@@ -3042,10 +3063,13 @@ pub mod pallet {
 					amount >= T::MinDelegation::get(),
 					Error::<T>::DelegationBelowMin
 				);
-				ensure!(
-					delegation_count >= state.delegations.0.len() as u32,
-					Error::<T>::TooLowDelegationCountToDelegate
-				);
+				#[cfg(not(feature = "runtime-benchmarks"))]
+				{
+					ensure!(
+						delegation_count >= state.delegations.0.len() as u32,
+						Error::<T>::TooLowDelegationCountToDelegate
+					);
+				}
 				ensure!(
 					(state.delegations.0.len() as u32) < T::MaxDelegationsPerDelegator::get(),
 					Error::<T>::ExceedMaxDelegationsPerDelegator
@@ -3068,10 +3092,13 @@ pub mod pallet {
 				Delegator::new(delegator.clone(), candidate.clone(), amount)
 			};
 			let mut state = <CandidateInfo<T>>::get(&candidate).ok_or(Error::<T>::CandidateDNE)?;
-			ensure!(
-				candidate_delegation_count >= state.delegation_count,
-				Error::<T>::TooLowCandidateDelegationCountToDelegate
-			);
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				ensure!(
+					candidate_delegation_count >= state.delegation_count,
+					Error::<T>::TooLowCandidateDelegationCountToDelegate
+				);
+			}
 			let (delegator_position, less_total_staked) = state.add_delegation::<T>(
 				&candidate,
 				Bond {
@@ -3125,7 +3152,10 @@ pub mod pallet {
 		) -> DispatchResultWithPostInfo {
 			ensure_signed(origin)?;
 			let state = <DelegatorState<T>>::get(&delegator).ok_or(Error::<T>::DelegatorDNE)?;
-			state.can_execute_leave::<T>(delegation_count)?;
+			#[cfg(not(feature = "runtime-benchmarks"))]
+			{
+				state.can_execute_leave::<T>(delegation_count)?;
+			}
 			for bond in state.delegations.0 {
 				if let Err(error) = Self::delegator_leaves_candidate(
 					bond.owner.clone(),
